@@ -4,7 +4,6 @@
 # Licensed under The MIT License [see LICENSE for details]
 # Written by Ross Girshick
 # --------------------------------------------------------
-
 """Blob helper functions."""
 
 import numpy as np
@@ -12,7 +11,7 @@ import numpy as np
 import cv2
 
 try:
-    xrange          # Python 2
+    xrange  # Python 2
 except NameError:
     xrange = range  # Python 3
 
@@ -32,6 +31,7 @@ def im_list_to_blob(ims):
 
     return blob
 
+
 def prep_im_for_blob(im, pixel_means, target_size, max_size):
     """Mean subtract and scale an image for use in a blob."""
 
@@ -46,7 +46,11 @@ def prep_im_for_blob(im, pixel_means, target_size, max_size):
     # if np.round(im_scale * im_size_max) > max_size:
     #     im_scale = float(max_size) / float(im_size_max)
     # im = imresize(im, im_scale)
-    im = cv2.resize(im, None, None, fx=im_scale, fy=im_scale,
+    im = cv2.resize(im,
+                    None,
+                    None,
+                    fx=im_scale,
+                    fy=im_scale,
                     interpolation=cv2.INTER_LINEAR)
 
     return im, im_scale
