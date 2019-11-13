@@ -112,12 +112,9 @@ class _fasterRCNN(nn.Module):
         self.pre_roi_time = pre_roi_time - rpn_time
 
         # do roi pooling based on predicted rois
-
         if cfg.POOLING_MODE == 'align':
-            # pooled_feat = self.RCNN_roi_align(base_feat, rois.view(-1, 5))
             pooled_feat = self._roi_align_layer(base_feat, rois.view(-1, 5))
         elif cfg.POOLING_MODE == 'pool':
-            # pooled_feat = self.RCNN_roi_pool(base_feat, rois.view(-1, 5))
             pooled_feat = self._roi_pool_layer(base_feat, rois.view(-1, 5))
 
         roi_pool_time = time.time()
