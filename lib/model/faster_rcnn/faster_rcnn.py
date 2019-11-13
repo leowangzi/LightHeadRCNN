@@ -47,16 +47,11 @@ class _fasterRCNN(nn.Module):
         # define rpn
         self.RCNN_rpn = _RPN(self.dout_base_model)
         self.RCNN_proposal_target = _ProposalTargetLayer(self.n_classes)
-
-        # self.RCNN_roi_pool = _RoIPooling(cfg.POOLING_SIZE, cfg.POOLING_SIZE, 1.0/16.0)
-        # self.RCNN_roi_align = RoIAlignAvg(cfg.POOLING_SIZE, cfg.POOLING_SIZE, 1.0/16.0)
-
-        # self.RCNN_roi_pool = ROIPool((cfg.POOLING_SIZE, cfg.POOLING_SIZE), 1.0/16.0)
-        # self.RCNN_roi_align = ROIAlign((cfg.POOLING_SIZE, cfg.POOLING_SIZE), 1.0/16.0, 0)
-		self.rpn_time = None
-		self.pre_roi_time = None
-		self.roi_pooling_time = None
-		self.subnet_time = None
+        
+        self.rpn_time = None
+        self.pre_roi_time = None
+        self.roi_pooling_time = None
+        self.subnet_time = None
 
     def _roi_pool_layer(self, bottom, rois):
         return RoIPool((cfg.POOLING_SIZE, cfg.POOLING_SIZE),
@@ -126,7 +121,7 @@ class _fasterRCNN(nn.Module):
             pooled_feat = self._roi_pool_layer(base_feat, rois.view(-1, 5))
 
         roi_pool_time = time.time()
-		self.roi_pooling_time = roi_pool_time - pre_roi_time
+        self.roi_pooling_time = roi_pool_time - pre_roi_time
 		
 		# feed pooled features to top model
         pooled_feat = self._head_to_tail(pooled_feat)
