@@ -371,6 +371,7 @@ if __name__ == '__main__':
 
         det_tic = time.time()
         with torch.no_grad():
+            time_measure, \
             rois, cls_prob, bbox_pred, \
             rpn_loss_cls, rpn_loss_box, \
             RCNN_loss_cls, RCNN_loss_bbox, \
