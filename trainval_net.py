@@ -493,14 +493,14 @@ if __name__ == '__main__':
             # backward
             optimizer.zero_grad()
             loss.backward()
-            # if args.net == "vgg16":
-            #     clip_gradient(fasterRCNN, 10.)
+            #if args.net == "vgg16":
+            #    clip_gradient(_RCNN, 10.)
             optimizer.step()
 
             if step % args.disp_interval == 0:
                 end = time.time()
                 if step > 0:
-                    loss_temp /= (args.disp_interval + 1)
+                    loss_temp /= args.disp_interval
 
                 if args.mGPUs:
                     loss_rpn_cls = rpn_loss_cls.mean().item()

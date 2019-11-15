@@ -313,7 +313,7 @@ if __name__ == '__main__':
         num_boxes = num_boxes.cuda()
         gt_boxes = gt_boxes.cuda()
 
-    # make variable
+    # make variable (PyTorch 0.4.0+)
     with torch.no_grad():
         im_data = Variable(im_data)
         im_info = Variable(im_info)
@@ -449,8 +449,7 @@ if __name__ == '__main__':
                 # cls_dets = torch.cat((cls_boxes, cls_scores), 1)
                 cls_dets = cls_dets[order]
                 # keep = nms(cls_dets, cfg.TEST.NMS, force_cpu=not cfg.USE_GPU_NMS)
-                keep = nms(cls_boxes[order, :], cls_scores[order],
-                           cfg.TEST.NMS)
+                keep = nms(cls_boxes[order, :], cls_scores[order], cfg.TEST.NMS)
                 cls_dets = cls_dets[keep.view(-1).long()]
                 if vis:
                     im2show = vis_detections(im2show, pascal_classes[j],

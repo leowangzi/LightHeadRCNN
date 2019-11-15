@@ -20,6 +20,8 @@ import torch
 from torch.autograd import Variable
 import torch.nn as nn
 import torch.optim as optim
+
+# import torch._utils as utils
 import pickle
 from roi_data_layer.roidb import combined_roidb
 from roi_data_layer.roibatchLoader import roibatchLoader
@@ -317,8 +319,7 @@ if __name__ == '__main__':
 
     # make variable (PyTorch 0.4.0+)
     with torch.no_grad():
-        im_data = Variable(
-            im_data)  # volatile flag is now deprecated in PyTorch 0.4.0.
+        im_data = Variable(im_data)
         im_info = Variable(im_info)
         num_boxes = Variable(num_boxes)
         gt_boxes = Variable(gt_boxes)
