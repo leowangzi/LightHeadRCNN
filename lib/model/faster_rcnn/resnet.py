@@ -73,7 +73,6 @@ def conv3x3(in_planes, out_planes, stride=1):
 
 #         return out
 
-
 # class Bottleneck(nn.Module):
 #     expansion = 4
 

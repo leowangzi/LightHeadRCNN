@@ -18,7 +18,11 @@ import pdb
 
 
 class vgg16(_fasterRCNN):
-    def __init__(self, classes, pretrained=False, class_agnostic=False, lighthead=False):
+    def __init__(self,
+                 classes,
+                 pretrained=False,
+                 class_agnostic=False,
+                 lighthead=False):
         self.model_path = 'data/pretrained_model/vgg16_caffe.pth'
         self.lighthead = lighthead
         self.pretrained = pretrained
