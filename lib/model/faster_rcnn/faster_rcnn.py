@@ -1,20 +1,17 @@
 import time
+import random
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 import torchvision.models as models
-from torch.autograd import Variable
-import numpy as np
-from model.utils.config import cfg
-from model.rpn.rpn import _RPN
-
 from torchvision.ops import RoIAlign, RoIPool
 
+from model.utils.config import cfg
+from model.rpn.rpn import _RPN
 from model.rpn.proposal_target_layer_cascade import _ProposalTargetLayer
-import random
-import pdb
-from model.utils.net_utils import _smooth_l1_loss, _crop_pool_layer, _affine_grid_gen, _affine_theta
+from model.utils.net_utils import _smooth_l1_loss
 from model.utils.layer_utils import LargeSeparableConv2d
 
 
@@ -47,19 +44,17 @@ class _fasterRCNN(nn.Module):
         # define rpn
         self.RCNN_rpn = _RPN(self.dout_base_model)
         self.RCNN_proposal_target = _ProposalTargetLayer(self.n_classes)
-        
+
         self.rpn_time = None
         self.pre_roi_time = None
         self.roi_pooling_time = None
         self.subnet_time = None
 
     def _roi_pool_layer(self, bottom, rois):
-        return RoIPool((cfg.POOLING_SIZE, cfg.POOLING_SIZE),
-                       1.0 / 16.0)(bottom, rois)
+        return RoIPool((cfg.POOLING_SIZE, cfg.POOLING_SIZE), 1.0 / 16.0)(bottom, rois)
 
     def _roi_align_layer(self, bottom, rois):
-        return RoIAlign((cfg.POOLING_SIZE, cfg.POOLING_SIZE), 1.0 / 16.0,
-                        0)(bottom, rois)
+        return RoIAlign((cfg.POOLING_SIZE, cfg.POOLING_SIZE), 1.0 / 16.0, 0)(bottom, rois)
 
     def forward(self, im_data, im_info, gt_boxes, num_boxes):
         batch_size = im_data.size(0)
@@ -73,8 +68,7 @@ class _fasterRCNN(nn.Module):
         base_feat = self.RCNN_base(im_data)
 
         # feed base feature map tp RPN to obtain rois
-        rois, rpn_loss_cls, rpn_loss_bbox = self.RCNN_rpn(
-            base_feat, im_info, gt_boxes, num_boxes)
+        rois, rpn_loss_cls, rpn_loss_bbox = self.RCNN_rpn(base_feat, im_info, gt_boxes, num_boxes)
         rpn_time = time.time()
         self.rpn_time = rpn_time - start
 
@@ -85,10 +79,8 @@ class _fasterRCNN(nn.Module):
 
             rois_label = Variable(rois_label.view(-1).long())
             rois_target = Variable(rois_target.view(-1, rois_target.size(2)))
-            rois_inside_ws = Variable(
-                rois_inside_ws.view(-1, rois_inside_ws.size(2)))
-            rois_outside_ws = Variable(
-                rois_outside_ws.view(-1, rois_outside_ws.size(2)))
+            rois_inside_ws = Variable(rois_inside_ws.view(-1, rois_inside_ws.size(2)))
+            rois_outside_ws = Variable(rois_outside_ws.view(-1, rois_outside_ws.size(2)))
         else:
             rois_label = None
             rois_target = None
@@ -101,11 +93,10 @@ class _fasterRCNN(nn.Module):
 
         # Large Separable Conv
         if self.lighthead:
-            # try:
-            #     base_feat = self.lighthead_base(base_feat)
-            # except Exception:
-            #     pass
-            base_feat = self.lighthead_base(base_feat)
+            try:
+                base_feat = self.lighthead_base(base_feat)
+            except Exception:
+                pass
             base_feat = self.lsconv(base_feat)
             base_feat = self.lh_relu(base_feat)
 
@@ -148,10 +139,9 @@ class _fasterRCNN(nn.Module):
             RCNN_loss_cls = F.cross_entropy(cls_score, rois_label)
 
             # bounding box regression L1 loss
-            RCNN_loss_bbox = _smooth_l1_loss(bbox_pred, rois_target,
-                                             rois_inside_ws, rois_outside_ws)
-            # if self.lighthead:
-            #     RCNN_loss_bbox = RCNN_loss_bbox * 2  # "to balance multi-task training"
+            RCNN_loss_bbox = _smooth_l1_loss(bbox_pred, rois_target, rois_inside_ws, rois_outside_ws)
+            if self.lighthead:
+                RCNN_loss_bbox = RCNN_loss_bbox * 2  # "to balance multi-task training"
 
         cls_prob = cls_prob.view(batch_size, rois.size(1), -1)
         bbox_pred = bbox_pred.view(batch_size, rois.size(1), -1)
@@ -172,8 +162,8 @@ class _fasterRCNN(nn.Module):
             """
             # x is a parameter
             if truncated:
-                m.weight.data.normal_().fmod_(2).mul_(stddev).add_(
-                    mean)  # not a perfect approximation
+                # not a perfect approximation
+                m.weight.data.normal_().fmod_(2).mul_(stddev).add_(mean)
             else:
                 m.weight.data.normal_(mean, stddev)
                 m.bias.data.zero_()

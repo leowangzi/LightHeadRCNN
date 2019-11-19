@@ -346,50 +346,21 @@ if __name__ == '__main__':
 
     # initilize the network here.
     if args.net == 'vgg16':
-        _RCNN = vgg16(imdb.classes,
-                      pretrained=True,
-                      class_agnostic=args.class_agnostic,
-                      lighthead=lighthead)
+        _RCNN = vgg16(imdb.classes, pretrained=True, class_agnostic=args.class_agnostic, lighthead=lighthead)
     elif args.net == 'res101':
-        _RCNN = resnet(imdb.classes,
-                       101,
-                       pretrained=True,
-                       class_agnostic=args.class_agnostic,
-                       lighthead=lighthead)
+        _RCNN = resnet(imdb.classes, 101, pretrained=True, class_agnostic=args.class_agnostic, lighthead=lighthead)
     elif args.net == 'res50':
-        _RCNN = resnet(imdb.classes,
-                       50,
-                       pretrained=True,
-                       class_agnostic=args.class_agnostic,
-                       lighthead=lighthead)
+        _RCNN = resnet(imdb.classes, 50, pretrained=True, class_agnostic=args.class_agnostic, lighthead=lighthead)
     elif args.net == 'res152':
-        _RCNN = resnet(imdb.classes,
-                       152,
-                       pretrained=True,
-                       class_agnostic=args.class_agnostic,
-                       lighthead=lighthead)
+        _RCNN = resnet(imdb.classes, 152, pretrained=True, class_agnostic=args.class_agnostic, lighthead=lighthead)
     elif args.net == 'xception':
-        _RCNN = xception(imdb.classes,
-                         pretrained=False,
-                         class_agnostic=args.class_agnostic,
-                         lighthead=lighthead)
+        _RCNN = xception(imdb.classes, pretrained=False, class_agnostic=args.class_agnostic, lighthead=lighthead)
     elif args.net == 'squeeze1_0':
-        _RCNN = squeezenet(imdb.classes,
-                           version='1_0',
-                           pretrained=True,
-                           class_agnostic=args.class_agnostic,
-                           lighthead=lighthead)
+        _RCNN = squeezenet(imdb.classes, version='1_0', pretrained=True, class_agnostic=args.class_agnostic, lighthead=lighthead)
     elif args.net == 'squeeze1_1':
-        _RCNN = squeezenet(imdb.classes,
-                           version='1_1',
-                           pretrained=True,
-                           class_agnostic=args.class_agnostic,
-                           lighthead=lighthead)
+        _RCNN = squeezenet(imdb.classes, version='1_1', pretrained=True, class_agnostic=args.class_agnostic, lighthead=lighthead)
     elif args.net == 'mobilenet':
-        _RCNN = mobilenetv2(imdb.classes,
-                            pretrained=True,
-                            class_agnostic=args.class_agnostic,
-                            lighthead=lighthead)
+        _RCNN = mobilenetv2(imdb.classes, pretrained=True, class_agnostic=args.class_agnostic, lighthead=lighthead)
 
     else:
         print("network is not defined")

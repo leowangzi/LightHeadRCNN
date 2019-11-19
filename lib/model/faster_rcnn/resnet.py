@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 from model.utils.config import cfg
-from model.utils.layer_utils import BasicBlock, Bottleneck, LargeSeparableConv2d
+from model.utils.layer_utils import conv3x3, BasicBlock, Bottleneck, LargeSeparableConv2d
 from model.faster_rcnn.faster_rcnn import _fasterRCNN
 
 import torch
@@ -32,14 +32,14 @@ model_urls = {
 }
 
 
-def conv3x3(in_planes, out_planes, stride=1):
-    "3x3 convolution with padding"
-    return nn.Conv2d(in_planes,
-                     out_planes,
-                     kernel_size=3,
-                     stride=stride,
-                     padding=1,
-                     bias=False)
+# def conv3x3(in_planes, out_planes, stride=1):
+#     "3x3 convolution with padding"
+#     return nn.Conv2d(in_planes,
+#                      out_planes,
+#                      kernel_size=3,
+#                      stride=stride,
+#                      padding=1,
+#                      bias=False)
 
 
 # class BasicBlock(nn.Module):
@@ -140,9 +140,9 @@ class ResNet(nn.Module):
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
+        # self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
         # it is slightly better whereas slower to set stride = 1
-        # self.layer4 = self._make_layer(block, 512, layers[3], stride=1)
+        self.layer4 = self._make_layer(block, 512, layers[3], stride=1)
         self.avgpool = nn.AvgPool2d(7)
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
@@ -261,7 +261,7 @@ class resnet(_fasterRCNN):
         self.dout_base_model = 1024
         if self.lighthead:
             self.dout_lh_base_model = 2048
-        self.num_layers = num_layers
+        # self.num_layers = num_layers
 
         _fasterRCNN.__init__(self,
                              classes,
@@ -272,14 +272,14 @@ class resnet(_fasterRCNN):
     def _init_modules(self):
         resnet = resnet101()
 
-        if self.num_layers == 18:
-            resnet = resnet18()
-        if self.num_layers == 34:
-            resnet = resnet34()
-        if self.num_layers == 50:
-            resnet = resnet50()
-        if self.num_layers == 152:
-            resnet = resnet152()
+        # if self.num_layers == 18:
+        #     resnet = resnet18()
+        # if self.num_layers == 34:
+        #     resnet = resnet34()
+        # if self.num_layers == 50:
+        #     resnet = resnet50()
+        # if self.num_layers == 152:
+        #     resnet = resnet152()
 
         if self.pretrained == True:
             print("Loading pretrained weights from %s" % (self.model_path))
@@ -302,9 +302,9 @@ class resnet(_fasterRCNN):
 
         if self.lighthead:
             self.lighthead_base = nn.Sequential(resnet.layer4)
-            self.RCNN_top = nn.Sequential(
-                nn.Linear(490 * 7 * 7, 2048),
-                nn.ReLU(inplace=True))  # 490 channels input into FC layer
+            # 490 channels input into FC layer
+            self.RCNN_top = nn.Sequential(nn.Linear(490 * 7 * 7, 2048),
+                                          nn.ReLU(inplace=True))
         else:
             self.RCNN_top = nn.Sequential(resnet.layer4)
 
@@ -367,6 +367,6 @@ class resnet(_fasterRCNN):
             pool5 = pool5.view(pool5.size(0), -1)
             fc7 = self.RCNN_top(pool5)
         else:
-            fc7 = self.RCNN_top(pool5).mean(3).mean(
-                2)  # or two large fully-connected layers
+            # or two large fully-connected layers
+            fc7 = self.RCNN_top(pool5).mean(3).mean(2)
         return fc7
