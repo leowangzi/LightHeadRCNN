@@ -11,7 +11,7 @@ from torch.autograd import Variable
 import math
 
 # __all__ = ['MobileNetV2', 'mobilenet_v2']
-__all__ = ['mobilenetv2']
+__all__ = ['mobilenetv2_o']
 
 model_urls = {
     'mobilenet_v2':
@@ -189,7 +189,7 @@ class MobileNetV2(nn.Module):
         return x
 
 
-class mobilenetv2(_fasterRCNN):
+class mobilenetv2_o(_fasterRCNN):
     def __init__(self,
                  classes,
                  pretrained=False,
@@ -232,7 +232,7 @@ class mobilenetv2(_fasterRCNN):
         self.RCNN_base = nn.Sequential(
             *list(mobilenet.features._modules.values())[:-2])
 
-        # Fix Layers?????
+        # Fix Layers
         if self.pretrained:
             for layer in range(len(self.RCNN_base)):
                 for p in self.RCNN_base[layer].parameters():
