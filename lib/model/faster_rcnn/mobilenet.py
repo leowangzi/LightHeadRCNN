@@ -85,7 +85,7 @@ class mobilenetv2(_fasterRCNN):
                              classes,
                              class_agnostic,
                              lighthead,
-                             compact_mode=False)
+                             compact_mode=True)
 
     def _init_modules(self):
         mobilenet = MobileNetV2()

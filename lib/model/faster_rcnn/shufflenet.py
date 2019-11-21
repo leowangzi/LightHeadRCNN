@@ -173,7 +173,7 @@ class shufflenetv2(_fasterRCNN):
                              classes,
                              class_agnostic,
                              lighthead,
-                             compact_mode=False)
+                             compact_mode=True)
 
     def _init_module(self):
         shufflenet = ShuffleNet2()
